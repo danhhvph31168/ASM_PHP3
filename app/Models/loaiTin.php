@@ -11,4 +11,7 @@ class loaiTin extends Model
     protected $fillable = [
         'name',
     ];
+    public function tins(){
+        return $this->hasMany(loaiTin::class);
+    }
 }

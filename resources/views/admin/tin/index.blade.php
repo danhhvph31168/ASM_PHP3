@@ -5,6 +5,7 @@
 @endsection
 
 @section('content')
+    <a href="{{ route('loaiTin.index') }}" class="btn btn-warning mb-3">Danh sách loại tin</a>
     <a href="{{ route('tin.create') }}" class="btn btn-info">Thêm mới</a>
     <table class="table">
         <thead>
@@ -20,14 +21,18 @@
                 <th>Action</th>
             </tr>
         </thead>
-        <tbody>
-            @foreach ($data as $item)
+        @foreach ($data as $item)
+            <tbody>
                 <tr>
                     <td>{{ $item->id }}</td>
                     <td>{{ $item->loaiTin->name }}</td>
                     <td>{{ $item->tieuDe }}</td>
                     <td>
-                        <img src="{{ $item->anh }}" width="100px" alt="">
+                        @if (!\Str::contains($item->anh, 'http'))
+                            <img src="{{ \Storage::url($item->anh) }}" width="100px" alt="">
+                        @else
+                            <img src="{{ $item->anh }}" width="100px" alt="">
+                        @endif
                     </td>
                     <td>{{ $item->luotXem }}</td>
                     <td>{{ $item->ngayDang }}</td>
@@ -39,12 +44,12 @@
                         <form action="{{ route('tin.destroy', $item->id) }}" method="post">
                             @csrf
                             @method('DELETE')
-                            <button onclick="return confirm('Chắc chắn xóa')"
-                            class="btn btn-danger">Xóa</button>
+                            <button onclick="return confirm('Chắc chắn xóa')" class="btn btn-danger">Xóa</button>
                         </form>
                     </td>
                 </tr>
-            @endforeach
-        </tbody>
+            </tbody>
+        @endforeach
     </table>
+    {{ $data->links() }}
 @endsection

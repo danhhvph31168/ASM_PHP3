@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\loaiTin;
 use App\Models\tin;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class TinController extends Controller
 {
@@ -20,7 +22,8 @@ class TinController extends Controller
      */
     public function create()
     {
-        return view(self::PATH_VIEW . __FUNCTION__);
+        $loaiTin = loaiTin::query()->get();
+        return view(self::PATH_VIEW . __FUNCTION__, compact('loaiTin'));
     }
 
     /**
@@ -28,7 +31,14 @@ class TinController extends Controller
      */
     public function store(Request $request)
     {
-        $tin = tin::query()->create($request->all());
+        $data = $request->except('anh');
+
+        if ($request->hasFile('anh')) {
+            $data['anh'] = Storage::put('tins', $request->file('anh'));
+        }
+
+        tin::query()->create($data);
+
         return redirect()->route('tin.index');
     }
 
@@ -46,8 +56,9 @@ class TinController extends Controller
      */
     public function edit(string $id)
     {
+        $loaiTin = loaiTin::query()->get();
         $model = tin::query()->find($id);
-        return view(self::PATH_VIEW . __FUNCTION__, compact('model'));
+        return view(self::PATH_VIEW . __FUNCTION__, compact('model', 'loaiTin'));
     }
 
     /**
@@ -55,8 +66,22 @@ class TinController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $model = tin::query()->find($id);
-        $model->update($request->all());
+        $model = tin::query()->findOrFail($id);
+
+        $data = $request->except('anh');
+
+        if ($request->hasFile('anh')) {
+            $data['anh'] = Storage::put('tins', $request->file('anh'));
+        }
+
+        $anhHienTai = $model->anh;
+
+        $model->update($data);
+
+        if ($request->hasFile('anh') && $anhHienTai && Storage::exists($anhHienTai)) {
+            Storage::delete($anhHienTai);
+        }
+
         return back();
     }
 
@@ -65,8 +90,14 @@ class TinController extends Controller
      */
     public function destroy(string $id)
     {
-        $model = tin::query()->find($id);
+        $model = tin::query()->findOrFail($id);
+
         $model->delete();
+
+        if ($model->anh && Storage::exists($model->anh)) {
+            Storage::delete($model->anh);
+        }
+
         return redirect()->route('tin.index');
     }
 }

@@ -8,15 +8,15 @@ use Illuminate\Database\Eloquent\Model;
 class tin extends Model
 {
     use HasFactory;
-    protected $fillabel = [
+    protected $fillable = [
         'loai_tin_id',
         'tieuDe',
         'anh',
         'noiDung',
         'luotXem',
-        'ngayDang',
     ];
-    public function loaiTin(){
+    public function loaiTin()
+    {
         return $this->belongsTo(loaiTin::class);
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 use App\Http\Controllers\Admin\LoaiTinController;
 use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\TinController;
@@ -10,17 +11,18 @@ use Illuminate\Support\Facades\Route;
 //     return view('welcome');
 // });
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('home');
 
-Route::get('/', [TinClineController::class, 'danhSach'])->name('danhSach');
+Route::get('/',             [TinClineController::class, 'danhSach'])->name('danhSach');
 Route::get('chi-tiet/{id}', [TinClineController::class, 'chiTiet'])->name('chiTiet');
 
-Auth::routes();
+Auth::routes(['verify' => true]);
 
 //admin
 Route::resource('admin/loaiTin', LoaiTinController::class);
-
-Route::resource('admin/tin', TinController::class);
+Route::resource('admin/tin',    TinController::class);
 
 
 //  asm 5

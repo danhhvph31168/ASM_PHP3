@@ -872,7 +872,11 @@
             @foreach ($data as $item)
                 <div class="col-md-3">
                     <div class="card" style="width: 18rem;">
-                        <img src="{{ $item->anh }}" class="card-img-top" alt="...">
+                        @if (!\Str::contains($item->anh, 'http'))
+                            <img src="{{ \Storage::url($item->anh) }}" width="100px" height="100px" class="card-img-top">
+                        @else
+                            <img src="{{ $item->anh }}" width="100px" class="card-img-top">
+                        @endif
                         <div class="card-body">
                             <h5 class="card-title">{{ \Str::limit($item->tieuDe, 30) }}</h5>
                             <p class="card-text">{{ \Str::limit($item->noiDung, 50) }}</p>
